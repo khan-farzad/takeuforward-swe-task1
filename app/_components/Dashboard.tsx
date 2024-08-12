@@ -9,13 +9,17 @@ const Dashboard = () => {
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
+  const [isLoading, setIsLoading] = useState(true)
+  const timeInSeconds = seconds + minutes*60 + hours*3600
   const [showBanner, setShowBanner] = useState(false);
   const [bannerData, setBannerData] = useState<{
     description: string;
     link: string;
+    expiryTime: number;
   }>({
     description: "",
     link: "",
+    expiryTime: -1
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,6 +27,7 @@ const Dashboard = () => {
   };
 
   const fetchBannerData = async () => {
+    setIsLoading(true)
     try {
       const res = await axios.get(
         "https://takeuforward-backend-production.up.railway.app"
@@ -30,9 +35,23 @@ const Dashboard = () => {
       setBannerData({
         link: res.data[0].link,
         description: res.data[0].description,
+        expiryTime: res.data[0].expiryTime
       });
+      const timeRemainingInMilliseconds = parseInt(res.data[0].expiryTime) - Date.now()
+      if(timeRemainingInMilliseconds > 0) {
+        setShowBanner(true)
+        setSeconds(Math.floor((timeRemainingInMilliseconds/1000)%60))
+        setMinutes(Math.floor((timeRemainingInMilliseconds/60000)%60))
+        setHours(Math.floor((timeRemainingInMilliseconds/3600000)))
+      }
+      else {
+        setShowBanner(false)
+      }
     } catch (error) {
       console.log("error in fetching banner data");
+    }
+    finally {
+      setIsLoading(false)
     }
   };
 
@@ -44,6 +63,7 @@ const Dashboard = () => {
         {
           description: bannerData.description,
           link: bannerData.link,
+          expiryTime: (timeInSeconds*1000+Date.now()).toString()
         }
       );
     } catch (error) {
@@ -55,6 +75,8 @@ const Dashboard = () => {
     fetchBannerData();
   }, []);
 
+  if (isLoading)
+    return (<div className="h-screen flex-center text-this-purple animate-pulse text-2xl">Loading...</div>)
   return (
     <div className="h-screen flex-center">
       {showBanner && (
