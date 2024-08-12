@@ -59,7 +59,7 @@ const Banner = ({
 
   return (
     <div className="absolute z-10 h-screen w-full flex-center backdrop-blur-sm">
-      <div className="bg-white rounded-md p-4 w-3/5 md:w-1/2 h-3/4 shadow-md flex flex-col items-end justify-between">
+      <div className="bg-white rounded-md p-4 w-4/5 sm:w-1/2 h-3/5 sm:h-3/4 shadow-md flex flex-col items-end justify-between">
         <button
           onClick={() => setShowBanner(false)}
           className="hover:rotate-90 transition-all duration-150"
@@ -98,9 +98,9 @@ const Banner = ({
         <div className="text-this-off-white shadow-md w-full text-center min-h-64">
           {bannerData.description}
         </div>
-        <p className="text-this-off-white font-light text-center w-full">
+        <p className="text-this-off-white font-light text-center w-full flex  overflow-hidden">
           Link:{" "}
-          <a className="text-this-purple font-normal" href={bannerData.link}>
+          <a className="text-this-purple font-normal grow" href={bannerData.link}>
             {bannerData.link}
           </a>
         </p>
